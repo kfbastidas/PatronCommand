@@ -368,7 +368,7 @@ public class GUIFood extends javax.swing.JFrame {
     }//GEN-LAST:event_txtIdKeyPressed
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
-
+        
     }//GEN-LAST:event_btnDeleteActionPerformed
 
 
