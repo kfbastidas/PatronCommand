@@ -348,7 +348,14 @@ public class GUIFood extends javax.swing.JFrame {
             btnDelete.setEnabled(true);
             btnUndo.setEnabled(false);
             txtName.setText(food.getName());
-            cboType.setSelectedItem(food.getType().toString());
+            int cont = 0;
+            for (FoodTypeEnum type : FoodTypeEnum.values()) {
+                if (food.getType().equals(type)) {
+                    cboType.setSelectedIndex(cont++);
+                }
+                cont++;
+            }
+//            cboType.setSelectedItem(food.getType().toString());
         }
 
     }//GEN-LAST:event_txtIdFocusLost
