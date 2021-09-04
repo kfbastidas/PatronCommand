@@ -10,7 +10,7 @@ import java.util.List;
  *
  * @author Libardo, Julio
  */
-public class FoodImplArrayRepository implements IFoodRepository {
+public class FoodImplArrayRepository implements IFoodRepository{
 
     private static List<Food> components;
 

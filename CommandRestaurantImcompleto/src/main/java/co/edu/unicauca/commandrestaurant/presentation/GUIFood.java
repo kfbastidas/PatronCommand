@@ -1,6 +1,7 @@
 package co.edu.unicauca.commandrestaurant.presentation;
 
 import co.edu.unicauca.commandrestaurant.domain.CreateCommand;
+import co.edu.unicauca.commandrestaurant.domain.DeleteCommand;
 import co.edu.unicauca.commandrestaurant.domain.Food;
 import javax.swing.table.DefaultTableModel;
 import co.edu.unicauca.commandrestaurant.domain.Invoker;
@@ -341,12 +342,15 @@ public class GUIFood extends javax.swing.JFrame {
             //Agregar
             btnAdd.setEnabled(true);
             btnUndo.setEnabled(false);
+            btnUpdate.setEnabled(false);
+            btnDelete.setEnabled(false);
 
         } else {
             //Editar
             btnUpdate.setEnabled(true);
             btnDelete.setEnabled(true);
             btnUndo.setEnabled(false);
+            btnAdd.setEnabled(false);
             txtName.setText(food.getName());
             int cont = 0;
             for (FoodTypeEnum type : FoodTypeEnum.values()) {
@@ -374,10 +378,61 @@ public class GUIFood extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_txtIdKeyPressed
 
+    /**
+     * elimina un componente y lo agrega a la pila de commands
+     * @param evt 
+     */
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+        String name = txtName.getText();
+        if (name.isEmpty()) {
+            Messages.warningMessage("Debe agregar un nombre", "Atención");
+            txtName.requestFocus();
+            return;
+        }
+        // Preparar los datos
+        int id = Integer.parseInt(txtId.getText());
+        String type = cboType.getSelectedItem().toString();
+        FoodTypeEnum foodTpye = FoodTypeEnum.valueOf(type);
+
+        // Crea la comida con los nuevos datos
+        Food food = new Food(id, name, foodTpye);
+
+        // Traer la comida verdadera a eliminar     
+        invoker.setCommand(new FindByIdCommand());
+        FindByIdCommand findByIdCommand = (FindByIdCommand) invoker.getCommand();
+        findByIdCommand.setFoodId(id);
+        invoker.execute();
+        //recupera la comida verdadera para poder validar que tenga los mismos datos
+        Food compAux = findByIdCommand.getFood();
+        if (compAux!=null) {
+            if (compAux.getName().equals(name) && compAux.getType().name().equals(food.getType().name())) {
+                deleteFood(food);
+            }else{
+                return;
+            }
+        }else{
+            return;
+        }
+
+        //Modifica la comida y guarda el previo
         
+        Messages.successMessage("Comida eliminada con éxito", "Atención");
+        clearControls();
+        initStateButtons();
+        loadDataTable();
     }//GEN-LAST:event_btnDeleteActionPerformed
 
+    /**
+     * Llama a la logica de negocio para eliminar la comida mediante el comando
+     *
+     * @param food comida a eliminar
+     */
+    private void deleteFood(Food food) {
+        //Fija el UpdateCommand
+        invoker.setCommand(new DeleteCommand(food));
+        //Ejecuta el comando
+        invoker.execute();
+    }
 
     /**
      * Limpia las cajas de texto
